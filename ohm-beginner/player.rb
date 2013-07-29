@@ -28,7 +28,12 @@ class Player
       elsif space.stairs?
         warrior.walk! @direction
       else
-        if warrior.health < 20 and @health <= warrior.health
+        spaces = warrior.look :forward
+        
+        if spaces.any? {|s| s.enemy?} and !spaces.any? {|s| s.captive?} and @health <= warrior.health
+          warrior.shoot!
+          @direction = :forward
+        elsif warrior.health < 20 and @health <= warrior.health
           warrior.rest!
 
           if @resting and @direction == :backward
