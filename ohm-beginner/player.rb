@@ -7,39 +7,45 @@ class Player
   end
 
   def play_turn(warrior)
-    space = warrior.feel @direction
-
-    if space.wall?
-      @direction = :forward
-    end
-
-    if space.captive?
-      warrior.rescue! @direction
+    if warrior.feel.wall?
+      warrior.pivot!
       @resting = false
-    elsif space.enemy?
-      warrior.attack! @direction
-      @resting = false
-      @attacking = true
-    elsif space.stairs?
-      warrior.walk! @direction
     else
-      if warrior.health < 20 and @health <= warrior.health
-        warrior.rest!
 
-        if @resting and @direction == :backward
-          @direction = :forward
-        end
+      space = warrior.feel @direction
 
-        @resting = true
-      else
-        warrior.walk! @direction
-        @resting = false
+      if space.wall?
+        @direction = :forward
       end
 
-      @direction = :backward if @attacking
-      @attacking = false
-    end
+      if space.captive?
+        warrior.rescue! @direction
+        @resting = false
+      elsif space.enemy?
+        warrior.attack! @direction
+        @resting = false
+        @attacking = true
+      elsif space.stairs?
+        warrior.walk! @direction
+      else
+        if warrior.health < 20 and @health <= warrior.health
+          warrior.rest!
 
-    @health = warrior.health
+          if @resting and @direction == :backward
+            @direction = :forward
+          end
+
+          @resting = true
+        else
+          warrior.walk! @direction
+          @resting = false
+        end
+
+        @direction = :backward if @attacking
+        @attacking = false
+      end
+
+      @health = warrior.health
+    end
   end
 end
