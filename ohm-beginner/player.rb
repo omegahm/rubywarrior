@@ -6,8 +6,12 @@ class Player
   def play_turn(warrior)
     space = warrior.feel
 
-    if space.enemy?
+    if space.captive?
+      warrior.rescue!
+    elsif space.enemy?
       warrior.attack!
+    elsif space.stairs?
+      warrior.walk!
     elsif warrior.health < 20 and @health <= warrior.health
       warrior.rest!
     else
