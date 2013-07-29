@@ -4,22 +4,25 @@ class Player
     
     # feel all around
     spaces = {
-      :forward  => warrior.feel(:forward),
+      :backward => warrior.feel(:backward),
       :left     => warrior.feel(:left),
       :right    => warrior.feel(:right),
-      :backward => warrior.feel(:backward)
+      :forward  => warrior.feel(:forward)
     } 
 
     enemies = spaces.select {|k, v| v.enemy? }
+    captives = spaces.select {|k, v| v.captive? }
 
-    if enemies.empty?
-      if warrior.health < 20
-        warrior.rest!
-      else
-        warrior.walk! stairs_direction
-      end
-    else
+    if enemies.count > 1
+      warrior.bind! enemies.first.first
+    elsif enemies.count == 1
       warrior.attack! enemies.first.first # first gets the first enemy, first get the direction
+    elsif warrior.health < 20
+      warrior.rest! 
+    elsif captives.count > 0
+      warrior.rescue! captives.first.first
+    else
+      warrior.walk! stairs_direction
     end
   end
 end
